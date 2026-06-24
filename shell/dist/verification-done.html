@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verificación completada</title>
+  <style>
+    body { font-family: system-ui, sans-serif; display: flex; align-items: center;
+           justify-content: center; height: 100vh; margin: 0; background: #f9fafb; }
+    .box { text-align: center; padding: 32px; }
+    .spinner { font-size: 48px; animation: spin 1s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="spinner">⏳</div>
+    <p>Procesando resultado...</p>
+  </div>
+  <script>
+    // Didit redirige aquí con ?verificationSessionId=...&status=...
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('verificationSessionId');
+    const status    = params.get('status');
+
+    // Notifica a la ventana padre (el iframe se cargó en nuestra app)
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'didit-complete', sessionId, status },
+        '*'
+      );
+    } else {
+      // Si por algún motivo se abrió como página completa, redirige con hash
+      window.location.href = `/?didit_session=${sessionId}&didit_status=${status}`;
+    }
+  </script>
+</body>
+</html>
